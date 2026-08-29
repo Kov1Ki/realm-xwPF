@@ -228,21 +228,19 @@ install_realm() {
         fi
         
         ARCH=$(uname -m)
-        # 检测 libc 类型（Alpine 使用 musl）
-        local libc_suffix="gnu"
-        if [ -f /etc/alpine-release ]; then
-            libc_suffix="musl"
-        fi
-
+        # 使用 musl 静态二进制：避免构建环境 glibc 不兼容
         case $ARCH in
             x86_64)
-                ARCH="x86_64-unknown-linux-${libc_suffix}"
+                ARCH="x86_64-unknown-linux-musl"
                 ;;
             aarch64)
-                ARCH="aarch64-unknown-linux-${libc_suffix}"
+                ARCH="aarch64-unknown-linux-musl"
                 ;;
-            armv7l|armv6l|arm)
-                ARCH="armv7-unknown-linux-gnueabihf"
+            armv7l|arm)
+                ARCH="armv7-unknown-linux-musleabihf"
+                ;;
+            armv6l)
+                ARCH="arm-unknown-linux-musleabihf"
                 ;;
             *)
                 echo -e "${RED}不支持的CPU架构: ${ARCH}${NC}"
